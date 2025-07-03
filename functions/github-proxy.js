@@ -1,57 +1,64 @@
 // functions/github-proxy.js
 
-// Acessa o token que salvaremos na interface da Netlify
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const GITHUB_OWNER = process.env.GITHUB_OWNER;
-const GITHUB_REPO = process.env.GITHUB_REPO;
-const GITHUB_PATH = process.env.GITHUB_PATH;
+// Importa o fetch se não estiver disponível globalmente (boa prática em Node.js)
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+// Acessa as variáveis de ambiente
+const { GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PATH } = process.env;
 
 exports.handler = async function(event, context) {
-    // A API do GitHub que queremos chamar
+    // Validação inicial para garantir que as variáveis de ambiente estão definidas
+    if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PATH) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Variáveis de ambiente do GitHub não estão configuradas corretamente na Netlify.' })
+        };
+    }
+
     const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
     
-    // Configurações da requisição que faremos para o GitHub
     const fetchOptions = {
-        method: event.httpMethod, // Usa o mesmo método (GET, PUT) que o frontend enviou
+        method: event.httpMethod,
         headers: {
             'Authorization': `Bearer ${GITHUB_TOKEN}`,
-            'Content-Type': 'application/json',
             'Accept': 'application/vnd.github.v3+json'
         }
     };
 
-    // Se a requisição for PUT (salvar), adicione o corpo
     if (event.httpMethod === 'PUT') {
+        // Para PUT, o corpo é esperado e o Content-Type é crucial
+        fetchOptions.headers['Content-Type'] = 'application/json';
         fetchOptions.body = event.body;
     }
 
     try {
         const response = await fetch(url, fetchOptions);
+        
+        // Se a resposta não for OK, precisamos ler o corpo para obter a mensagem de erro
+        if (!response.ok) {
+            // Se o arquivo não for encontrado (404), é um caso especial que o frontend já sabe lidar
+            if (response.status === 404) {
+                 return {
+                    statusCode: 404,
+                    body: JSON.stringify({ message: "File not found" })
+                };
+            }
+            // Para outros erros, tente ler a mensagem da API do GitHub
+            const errorData = await response.json();
+            throw new Error(`GitHub API Error (${response.status}): ${errorData.message || 'Erro desconhecido'}`);
+        }
+
         const data = await response.json();
 
-        // Se o status da resposta for 404 (Not Found), o arquivo ainda não existe.
-        // Retornamos um status especial para o frontend lidar com isso.
-        if (response.status === 404) {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ message: "File not found" })
-            };
-        }
-
-        if (!response.ok) {
-            // Se a API do GitHub retornou um erro, repasse-o para o frontend
-            throw new Error(`GitHub API Error: ${response.status} ${data.message || ''}`);
-        }
-
-        // Retorna a resposta do GitHub para o nosso frontend
         return {
             statusCode: 200,
             body: JSON.stringify(data)
         };
 
     } catch (error) {
+        console.error("Erro na função do proxy:", error);
         return {
-            statusCode: 500,
+            statusCode: 502, // Bad Gateway, indica um erro ao comunicar com o GitHub
             body: JSON.stringify({ error: error.message })
         };
     }
