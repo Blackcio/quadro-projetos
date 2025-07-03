@@ -31,6 +31,13 @@
         .btn-acao:hover, .btn-excluir:hover { background-color: #e9ecef; color: var(--cor-texto-principal); }
         .btn-excluir:hover { color: var(--cor-perigo); }
         .btn-acao svg, .btn-excluir svg { width: 18px; height: 18px; }
+        .btn.btn-alteracao-pendente {
+    background-color: #f7b928; /* Uma cor de "aviso", como amarelo/laranja */
+    color: #1a1a1a;
+    font-weight: 600; }
+        .btn.btn-alteracao-pendente:hover {
+    background-color: #f5b00f;
+    box-shadow: 0 4px 10px rgba(247, 185, 40, 0.3); }
         .projeto { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin-bottom: 30px; box-shadow: 0 2px 4px var(--cor-sombra); overflow: hidden; }
         .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--cor-borda); }
         .projeto-titulo-input { font-size: 20px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
@@ -95,6 +102,7 @@
         const app = {
             data: { projetos: [] },
             sha: null,
+            alteracoesNaoSalvas: false, // <-- NOSSA NOVA BANDEIRA!
             icons: {
                 add: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>`,
                 addSubtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M228,80a12,12,0,0,1-12,12H160v28h56a12,12,0,0,1,0,24H160v28h56a12,12,0,0,1,0,24H148a12,12,0,0,1-12-12V92H40a12,12,0,0,1,0-24H136V40a12,12,0,0,1,24,0V68h56A12,12,0,0,1,228,80Z"></path></svg>`,
@@ -102,6 +110,13 @@
                 close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"></path></svg>`,
                 save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`
             },
+
+            marcarAlteracao() {
+        this.alteracoesNaoSalvas = true;
+        const btnSalvar = document.getElementById('btn-salvar-github');
+        btnSalvar.classList.add('btn-alteracao-pendente'); // Adicionaremos este estilo
+        btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações*`;
+    },
             
             async init() {
                 this.preencherElementosIniciais();
@@ -137,7 +152,8 @@
                     const contentBase64 = fileData.content;
                     const decodedUtf8 = decodeURIComponent(escape(window.atob(contentBase64)));
                     
-                    this.data = JSON.parse(decodedUtf8);
+                    this.data = JSON.parse(decodedUtf8); 
+this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                 } catch (error) {
                     this.renderError('Falha ao carregar dados. Verifique a configuração na Netlify e a conexão.<br><br><small>' + error.message + '</small>');
                     console.error('Erro detalhado ao carregar:', error);
@@ -181,6 +197,12 @@
                     if (responseData && responseData.content && responseData.content.sha) {
                         this.sha = responseData.content.sha;
                         console.log('NOVO SHA definido como:', this.sha);
+                        
+                        this.alteracoesNaoSalvas = false;
+    const btnSalvar = document.getElementById('btn-salvar-github');
+    btnSalvar.classList.remove('btn-alteracao-pendente');
+    btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
+
                         alert('Dados salvos no GitHub com sucesso!');
                     } else {
                         throw new Error('Resposta do proxy não continha o novo SHA.');
@@ -258,17 +280,26 @@
                     else if (field === 'nome-subtarefa') this.atualizarSubtarefa(projetoId, tarefaId, e.target.closest('[data-subtarefa-id]').dataset.subtarefaId, 'nome', e.target.value);
                     else this.atualizarTarefa(projetoId, tarefaId, field, e.target.value);
                 });
-            },
-            adicionarProjeto(nome) { this.data.projetos.push({ id: this.generateId(), nome: nome, tarefas: [] }); this.render(); },
-            excluirProjeto(id) { this.data.projetos = this.data.projetos.filter(p => p.id !== id); this.render(); },
-            atualizarProjeto(id, campo, valor) { const p = this.data.projetos.find(p => p.id === id); if (p) p[campo] = valor; },
-            adicionarTarefa(pId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas.push({ id: this.generateId(), nome: 'Nova Tarefa', prazo: '', subtarefas: [] }); this.render(); } },
-            excluirTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas = p.tarefas.filter(t => t.id !== tId); this.render(); } },
-            atualizarTarefa(pId, tId, campo, valor) { const t = this.findTarefa(pId, tId); if (t) { t[campo] = valor; } },
-            adicionarSubtarefa(pId, tId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas.push({ id: this.generateId(), nome: '', concluida: false }); this.render(); } },
-            excluirSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas = t.subtarefas.filter(st => st.id !== stId); this.render(); } },
-            toggleSubtarefa(pId, tId, stId, concluida) { const st = this.findSubtarefa(pId, tId, stId); if (st) st.concluida = concluida; },
-            atualizarSubtarefa(pId, tId, stId, campo, valor) { const st = this.findSubtarefa(pId, tId, stId); if (st) st[campo] = valor; },
+
+window.addEventListener('beforeunload', (e) => {
+        if (this.alteracoesNaoSalvas) {
+            // Padrão exigido pelos navegadores modernos
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+},
+
+            adicionarProjeto(nome) { this.data.projetos.push({ id: this.generateId(), nome: nome, tarefas: [] }); this.render(); this.marcarAlteracao(); },
+            excluirProjeto(id) { this.data.projetos = this.data.projetos.filter(p => p.id !== id); this.render(); this.marcarAlteracao(); },
+            atualizarProjeto(id, campo, valor) { const p = this.data.projetos.find(p => p.id === id); if (p) p[campo] = valor; this.marcarAlteracao(); },
+            adicionarTarefa(pId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas.push({ id: this.generateId(), nome: 'Nova Tarefa', prazo: '', subtarefas: [] }); this.render(); this.marcarAlteracao(); } },
+            excluirTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas = p.tarefas.filter(t => t.id !== tId); this.render(); this.marcarAlteracao(); } },
+            atualizarTarefa(pId, tId, campo, valor) { const t = this.findTarefa(pId, tId); if (t) { t[campo] = valor; this.marcarAlteracao(); } },
+            adicionarSubtarefa(pId, tId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas.push({ id: this.generateId(), nome: '', concluida: false }); this.render(); this.marcarAlteracao(); } },
+            excluirSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas = t.subtarefas.filter(st => st.id !== stId); this.render(); this.marcarAlteracao(); } },
+            toggleSubtarefa(pId, tId, stId, concluida) { const st = this.findSubtarefa(pId, tId, stId); if (st) st.concluida = concluida; this.marcarAlteracao(); },
+            atualizarSubtarefa(pId, tId, stId, campo, valor) { const st = this.findSubtarefa(pId, tId, stId); if (st) st[campo] = valor; this.marcarAlteracao(); },
             findTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); return p ? p.tarefas.find(t => t.id === tId) : null; },
             findSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); return t ? t.subtarefas.find(st => st.id === stId) : null; }
         };
