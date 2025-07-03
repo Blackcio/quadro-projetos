@@ -1,16 +1,3 @@
 {
-  "projetos": [
-    {
-      "id": "mcnsfkwhs5er477y41",
-      "nome": "teste",
-      "tarefas": [
-        {
-          "id": "mcnsfm3wrvz19zdgwak",
-          "nome": "Nova Tarefa",
-          "prazo": "2025-07-16",
-          "subtarefas": []
-        }
-      ]
-    }
-  ]
+  "projetos": []
 }
