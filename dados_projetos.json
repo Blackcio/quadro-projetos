@@ -9,6 +9,12 @@
           "nome": "Transmitir Cronograma ",
           "prazo": "2025-07-04",
           "subtarefas": []
+        },
+        {
+          "id": "mco0n7upqp7ags3tpna",
+          "nome": "Nova Tarefa",
+          "prazo": "",
+          "subtarefas": []
         }
       ]
     },
