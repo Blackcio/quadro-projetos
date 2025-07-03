@@ -89,6 +89,8 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Objeto GITHUB_CONFIG foi REMOVIDO daqui para segurança.
+        // As configurações agora estão nas variáveis de ambiente da Netlify.
 
         const app = {
             data: { projetos: [] },
@@ -105,46 +107,43 @@
                 this.preencherElementosIniciais();
                 this.renderLoading();
                 this.attachEventListeners();
-                
-                if (GITHUB_CONFIG.token === 'COLE_SEU_NOVO_TOKEN_AQUI' || !GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) {
-                    this.renderError('<b>Configuração Incompleta!</b><br>Por favor, edite o arquivo HTML e preencha as variáveis <code>GITHUB_CONFIG</code> com seu token, usuário e nome do repositório.');
-                    return;
-                }
-                
                 await this.carregarDoGitHub();
                 this.render();
             },
             
-            // --- INÍCIO DAS FUNÇÕES CORRIGIDAS ---
+            // --- FUNÇÕES DE SINCRONIZAÇÃO COM O PROXY ---
             async carregarDoGitHub() {
-                // A URL agora aponta para o nosso proxy
                 const url = `/.netlify/functions/github-proxy`;
                 try {
-                    const response = await fetch(url, { method: 'GET' }); // Sempre GET para carregar
-
-                    // Se o proxy retornou 404, significa que o arquivo não existe no GitHub
+                    const response = await fetch(url, { method: 'GET' });
+                    
                     if (response.status === 404) {
                         this.data = { projetos: [] };
                         this.sha = null;
+                        console.log('Arquivo não encontrado no GitHub. Iniciando com quadro vazio.');
                         return;
                     }
 
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`Erro no Proxy: ${errorData.error}`);
+                        const errorData = await response.json().catch(() => ({ error: 'Resposta inválida do servidor.' }));
+                        throw new Error(`Erro no Proxy ao carregar: ${errorData.error || response.statusText}`);
                     }
-
+                    
                     const fileData = await response.json();
+                    console.log('Dados carregados do GitHub:', fileData);
                     this.sha = fileData.sha;
-
+                    console.log('SHA inicial definido como:', this.sha);
+                    
                     const contentBase64 = fileData.content;
                     const decodedUtf8 = decodeURIComponent(escape(window.atob(contentBase64)));
                     
                     this.data = JSON.parse(decodedUtf8);
                 } catch (error) {
                     this.renderError('Falha ao carregar dados. Verifique a configuração na Netlify e a conexão.<br><br><small>' + error.message + '</small>');
+                    console.error('Erro detalhado ao carregar:', error);
                 }
             },
+
             async salvarNoGitHub() {
                 const btnSalvar = document.getElementById('btn-salvar-github');
                 btnSalvar.disabled = true;
@@ -153,35 +152,50 @@
                 const jsonString = JSON.stringify(this.data, null, 2);
                 const contentEncoded = window.btoa(unescape(encodeURIComponent(jsonString)));
 
-                // A URL agora aponta para o nosso proxy
                 const url = `/.netlify/functions/github-proxy`;
                 const body = {
                     message: `Atualização do quadro: ${new Date().toISOString()}`,
                     content: contentEncoded,
                     sha: this.sha
                 };
+                
+                console.log('Enviando para o proxy:', body);
 
                 try {
                     const response = await fetch(url, {
                         method: 'PUT',
-                        body: JSON.stringify(body) // O corpo da requisição para o proxy
+                        headers: {
+                            'Content-Type': 'application/json' // <-- A CORREÇÃO ESSENCIAL
+                        },
+                        body: JSON.stringify(body)
                     });
 
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`Erro no Proxy: ${errorData.error}`);
+                        const errorData = await response.json().catch(() => ({ error: 'Resposta inválida do servidor.' }));
+                        throw new Error(`Erro no Proxy ao salvar: ${errorData.error || response.statusText}`);
                     }
-                    
+
                     const responseData = await response.json();
-                    this.sha = responseData.content.sha;
-                    alert('Dados salvos no GitHub com sucesso!');
+                    console.log('Resposta recebida do proxy:', responseData);
+
+                    if (responseData && responseData.content && responseData.content.sha) {
+                        this.sha = responseData.content.sha;
+                        console.log('NOVO SHA definido como:', this.sha);
+                        alert('Dados salvos no GitHub com sucesso!');
+                    } else {
+                        throw new Error('Resposta do proxy não continha o novo SHA.');
+                    }
                 } catch (error) {
+                    console.error('Erro detalhado ao salvar:', error);
                     alert('Falha ao salvar no GitHub. Tente novamente.\n\n' + error.message);
                 } finally {
                     btnSalvar.disabled = false;
                     btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
                 }
-            },            preencherElementosIniciais() {
+            },
+
+            // --- O restante do código permanece o mesmo ---
+            preencherElementosIniciais() {
                 document.getElementById('btn-salvar-github').innerHTML = `${this.icons.save} Salvar Alterações`;
                 document.getElementById('btn-novo-projeto').innerHTML = `${this.icons.add} Novo Projeto`;
                 document.getElementById('modal-novo-projeto').innerHTML = `<div class="modal-content"><h3>Adicionar Novo Projeto</h3><input type="text" id="input-nome-projeto" placeholder="Digite o nome do projeto..." autocomplete="off"><div class="modal-acoes"><button id="btn-modal-cancelar" class="btn btn-secundario">Cancelar</button><button id="btn-modal-salvar" class="btn">Salvar</button></div></div>`;
