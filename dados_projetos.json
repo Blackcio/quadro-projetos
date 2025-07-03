@@ -11,6 +11,18 @@
           "subtarefas": []
         }
       ]
+    },
+    {
+      "id": "mco0giirxxtj5eg98q",
+      "nome": "Passo Fundo - M6",
+      "tarefas": [
+        {
+          "id": "mco0gn75jmvkpmqea2",
+          "nome": "Materiais obra ",
+          "prazo": "2025-07-07",
+          "subtarefas": []
+        }
+      ]
     }
   ]
 }
