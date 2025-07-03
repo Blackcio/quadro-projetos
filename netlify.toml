@@ -1,0 +1,4 @@
+# netlify.toml
+[build]
+  functions = "functions/" # Onde estão nossas funções serverless
+  publish = "public/"    # Onde está nosso site estático (HTML, CSS)

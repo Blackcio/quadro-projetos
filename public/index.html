@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadro de Projetos Simplificado (GitHub Sync)</title>
+    <!-- O CSS e a maior parte do HTML permanecem os mesmos -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cor-primaria: #0073ea; --cor-primaria-clara: #e6f1fc; --cor-fundo: #f7f8fa;
+            --cor-borda: #e4e7eb; --cor-texto-principal: #1a1a1a; --cor-texto-secundario: #5e6c84;
+            --cor-sombra: rgba(26, 26, 26, 0.07); --cor-branco: #ffffff; --cor-perigo: #e2445c;
+            --raio-borda: 8px; --velocidade-transicao: 0.2s;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--cor-fundo); color: var(--cor-texto-principal); line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 25px; }
+        header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--cor-borda); }
+        header h1 { color: var(--cor-texto-principal); font-size: 26px; }
+        header .acoes-globais { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--cor-primaria); color: var(--cor-branco); border: none; padding: 10px 16px; border-radius: var(--raio-borda); cursor: pointer; font-weight: 500; font-size: 14px; text-decoration: none; transition: all var(--velocidade-transicao) ease; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 115, 234, 0.2); }
+        .btn:disabled { background-color: var(--cor-texto-secundario); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+        .btn-secundario { background-color: var(--cor-branco); color: var(--cor-texto-secundario); border: 1px solid var(--cor-borda); }
+        .btn-secundario:hover { background-color: var(--cor-fundo); border-color: #c1c7d0; box-shadow: none; }
+        .btn-acao, .btn-excluir { background: none; border: none; cursor: pointer; color: var(--cor-texto-secundario); padding: 4px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all var(--velocidade-transicao); }
+        .btn-acao:hover, .btn-excluir:hover { background-color: #e9ecef; color: var(--cor-texto-principal); }
+        .btn-excluir:hover { color: var(--cor-perigo); }
+        .btn-acao svg, .btn-excluir svg { width: 18px; height: 18px; }
+        .projeto { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin-bottom: 30px; box-shadow: 0 2px 4px var(--cor-sombra); overflow: hidden; }
+        .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--cor-borda); }
+        .projeto-titulo-input { font-size: 20px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
+        .projeto-titulo-input:focus { outline: none; background-color: var(--cor-primaria-clara); }
+        .tabela-tarefas { display: grid; }
+        .tabela-header { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; background-color: var(--cor-fundo); font-weight: 500; font-size: 13px; color: var(--cor-texto-secundario); text-transform: uppercase; letter-spacing: 0.5px; }
+        .tabela-header > div { padding: 12px 15px; }
+        .linha-tarefa { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; align-items: center; border-bottom: 1px solid var(--cor-borda); }
+        .linha-tarefa:last-child { border-bottom: none; }
+        .celula { padding: 8px 15px; display: flex; align-items: center; min-height: 54px; }
+        .celula:first-child { font-weight: 500; }
+        .celula input { width: 100%; border: 1px solid transparent; padding: 8px; border-radius: 4px; font-size: 14px; background-color: transparent; font-family: 'Inter', sans-serif; }
+        .celula input:focus { outline: none; border: 1px solid var(--cor-primaria); background-color: var(--cor-branco); box-shadow: 0 0 0 2px var(--cor-primaria-clara); }
+        .celula-acoes { justify-content: center; gap: 10px; }
+        .linha-subtarefa { display: flex; align-items: center; gap: 10px; background-color: var(--cor-fundo); padding: 10px 15px 10px 50px; border-bottom: 1px solid var(--cor-borda); }
+        .linha-subtarefa input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--cor-primaria); }
+        .linha-subtarefa input[type="text"] { flex-grow: 1; border: none; background: transparent; font-size: 14px; }
+        .linha-subtarefa.concluida input[type="text"] { text-decoration: line-through; color: var(--cor-texto-secundario); }
+        .projeto-footer { padding: 10px 20px; }
+        .btn-adicionar-tarefa { background: none; border: none; color: var(--cor-primaria); cursor: pointer; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity var(--velocidade-transicao) ease; }
+        .modal-overlay.visivel { opacity: 1; pointer-events: auto; }
+        .modal-content { background: var(--cor-branco); padding: 30px; border-radius: var(--raio-borda); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transform: scale(0.95); transition: transform var(--velocidade-transicao) ease; }
+        .modal-overlay.visivel .modal-content { transform: scale(1); }
+        .modal-content h3 { margin-bottom: 20px; font-size: 20px; text-align: center; }
+        .modal-content input { width: 100%; border: 1px solid var(--cor-borda); padding: 12px; border-radius: var(--raio-borda); font-size: 16px; margin-bottom: 20px; }
+        .modal-acoes { display: flex; justify-content: flex-end; gap: 10px; }
+        @media (max-width: 768px) {
+            .container { padding: 15px; } header h1 { font-size: 22px; } .tabela-header { display: none; }
+            .tabela-tarefas, .linha-tarefa { display: block; }
+            .linha-tarefa { border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin: 0 15px 15px; padding: 15px; }
+            .celula { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 8px 0; min-height: auto; border-bottom: 1px dashed var(--cor-borda); }
+            .linha-tarefa .celula:last-child { border-bottom: none; }
+            .celula::before { content: attr(data-label); font-weight: 500; color: var(--cor-texto-secundario); font-size: 13px; margin-right: 10px; }
+            .celula:has(input[data-field="nome"]) { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .celula:has(input[data-field="nome"])::before { display: none; }
+            .celula input[data-field="nome"] { font-size: 16px; font-weight: 600; padding-left: 0; }
+            .celula-acoes { justify-content: flex-end; padding-top: 10px; }
+            .celula-acoes::before { display: none; }
+            .linha-subtarefa { margin: 0 15px; padding-left: 15px; border: 1px solid var(--cor-borda); border-top: none; border-radius: 0 0 var(--raio-borda) var(--raio-borda); margin-top: -16px; margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Quadro de Projetos</h1>
+            <div class="acoes-globais">
+                <button class="btn" id="btn-salvar-github"></button>
+                <button class="btn" id="btn-novo-projeto"></button>
+            </div>
+        </header>
+        <main id="quadro-container"></main>
+    </div>
+    <div id="modal-novo-projeto" class="modal-overlay"></div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const app = {
+            data: { projetos: [] },
+            sha: null,
+            icons: {
+                add: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>`,
+                addSubtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M228,80a12,12,0,0,1-12,12H160v28h56a12,12,0,0,1,0,24H160v28h56a12,12,0,0,1,0,24H148a12,12,0,0,1-12-12V92H40a12,12,0,0,1,0-24H136V40a12,12,0,0,1,24,0V68h56A12,12,0,0,1,228,80Z"></path></svg>`,
+                trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,160H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>`,
+                close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"></path></svg>`,
+                save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`
+            },
+            
+            async init() {
+                this.preencherElementosIniciais();
+                this.renderLoading();
+                this.attachEventListeners();
+                
+                if (GITHUB_CONFIG.token === 'COLE_SEU_NOVO_TOKEN_AQUI' || !GITHUB_CONFIG.owner || !GITHUB_CONFIG.repo) {
+                    this.renderError('<b>Configuração Incompleta!</b><br>Por favor, edite o arquivo HTML e preencha as variáveis <code>GITHUB_CONFIG</code> com seu token, usuário e nome do repositório.');
+                    return;
+                }
+                
+                await this.carregarDoGitHub();
+                this.render();
+            },
+            
+            // --- INÍCIO DAS FUNÇÕES CORRIGIDAS ---
+            async carregarDoGitHub() {
+                // A URL agora aponta para o nosso proxy
+                const url = `/.netlify/functions/github-proxy`;
+                try {
+                    const response = await fetch(url, { method: 'GET' }); // Sempre GET para carregar
+
+                    // Se o proxy retornou 404, significa que o arquivo não existe no GitHub
+                    if (response.status === 404) {
+                        this.data = { projetos: [] };
+                        this.sha = null;
+                        return;
+                    }
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Erro no Proxy: ${errorData.error}`);
+                    }
+
+                    const fileData = await response.json();
+                    this.sha = fileData.sha;
+
+                    const contentBase64 = fileData.content;
+                    const decodedUtf8 = decodeURIComponent(escape(window.atob(contentBase64)));
+                    
+                    this.data = JSON.parse(decodedUtf8);
+                } catch (error) {
+                    this.renderError('Falha ao carregar dados. Verifique a configuração na Netlify e a conexão.<br><br><small>' + error.message + '</small>');
+                }
+            },
+            async salvarNoGitHub() {
+                const btnSalvar = document.getElementById('btn-salvar-github');
+                btnSalvar.disabled = true;
+                btnSalvar.innerHTML = 'Salvando...';
+                
+                const jsonString = JSON.stringify(this.data, null, 2);
+                const contentEncoded = window.btoa(unescape(encodeURIComponent(jsonString)));
+
+                // A URL agora aponta para o nosso proxy
+                const url = `/.netlify/functions/github-proxy`;
+                const body = {
+                    message: `Atualização do quadro: ${new Date().toISOString()}`,
+                    content: contentEncoded,
+                    sha: this.sha
+                };
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        body: JSON.stringify(body) // O corpo da requisição para o proxy
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Erro no Proxy: ${errorData.error}`);
+                    }
+                    
+                    const responseData = await response.json();
+                    this.sha = responseData.content.sha;
+                    alert('Dados salvos no GitHub com sucesso!');
+                } catch (error) {
+                    alert('Falha ao salvar no GitHub. Tente novamente.\n\n' + error.message);
+                } finally {
+                    btnSalvar.disabled = false;
+                    btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
+                }
+            },            preencherElementosIniciais() {
+                document.getElementById('btn-salvar-github').innerHTML = `${this.icons.save} Salvar Alterações`;
+                document.getElementById('btn-novo-projeto').innerHTML = `${this.icons.add} Novo Projeto`;
+                document.getElementById('modal-novo-projeto').innerHTML = `<div class="modal-content"><h3>Adicionar Novo Projeto</h3><input type="text" id="input-nome-projeto" placeholder="Digite o nome do projeto..." autocomplete="off"><div class="modal-acoes"><button id="btn-modal-cancelar" class="btn btn-secundario">Cancelar</button><button id="btn-modal-salvar" class="btn">Salvar</button></div></div>`;
+            },
+            renderLoading() { document.getElementById('quadro-container').innerHTML = `<p style="text-align:center; padding: 40px;">Carregando dados do GitHub...</p>`; },
+            renderError(mensagem) { document.getElementById('quadro-container').innerHTML = `<p style="text-align:center; color: var(--cor-perigo); padding: 40px; background: var(--cor-branco); border-radius: var(--raio-borda); border: 1px dashed var(--cor-perigo);">${mensagem}</p>`; },
+            alertaInicial() {
+                document.getElementById('quadro-container').innerHTML = `<p style="text-align:center; color: var(--cor-texto-secundario); padding: 40px 20px; background: var(--cor-branco); border-radius: var(--raio-borda); border: 1px dashed var(--cor-borda);">Nenhum projeto por aqui. Que tal <a href="#" id="link-criar-primeiro">criar o primeiro</a>?</p>`;
+                document.getElementById('link-criar-primeiro')?.addEventListener('click', (e) => { e.preventDefault(); this.toggleModal(true); });
+            },
+            toggleModal(show) {
+                const modal = document.getElementById('modal-novo-projeto');
+                const input = document.getElementById('input-nome-projeto');
+                if (show) { modal.classList.add('visivel'); input.focus(); } else { modal.classList.remove('visivel'); input.value = ''; }
+            },
+            generateId() { return Date.now().toString(36) + Math.random().toString(36).substr(2); },
+            render() {
+                const container = document.getElementById('quadro-container');
+                container.innerHTML = '';
+                if (this.data.projetos.length === 0) { this.alertaInicial(); return; }
+                this.data.projetos.forEach(projeto => {
+                    const projetoEl = document.createElement('div');
+                    projetoEl.className = 'projeto';
+                    projetoEl.dataset.projetoId = projeto.id;
+                    const tarefasHTML = projeto.tarefas.map(tarefa => { const subtarefasHTML = tarefa.subtarefas.map(st => this.getSubtarefaHTML(tarefa.id, st)).join(''); return this.getTarefaHTML(tarefa) + subtarefasHTML; }).join('');
+                    projetoEl.innerHTML = `<div class="projeto-header"><input type="text" value="${projeto.nome}" data-field="nome-projeto" class="projeto-titulo-input" title="Clique para editar o nome do projeto"><button class="btn-excluir" data-action="excluir-projeto" title="Excluir Projeto">${this.icons.trash}</button></div><div class="tabela-tarefas"><div class="tabela-header"><div>Tarefa</div><div>Prazo</div><div>Ações</div></div>${tarefasHTML}</div><div class="projeto-footer"><button class="btn-adicionar-tarefa" data-action="adicionar-tarefa">${this.icons.add} Adicionar Tarefa</button></div>`;
+                    container.appendChild(projetoEl);
+                });
+            },
+            getTarefaHTML(tarefa) {
+                return `<div class="linha-tarefa" data-tarefa-id="${tarefa.id}"><div class="celula" data-label="Tarefa"><input type="text" value="${tarefa.nome}" data-field="nome" placeholder="Nome da tarefa..."></div><div class="celula" data-label="Prazo"><input type="date" value="${tarefa.prazo || ''}" data-field="prazo"></div><div class="celula celula-acoes"><button class="btn-acao" data-action="adicionar-subtarefa" title="Adicionar Sub-tarefa">${this.icons.addSubtask}</button><button class="btn-acao" data-action="excluir-tarefa" title="Excluir Tarefa">${this.icons.trash}</button></div></div>`;
+            },
+            getSubtarefaHTML(tarefaId, subtarefa) {
+                const concluidaClass = subtarefa.concluida ? 'concluida' : '';
+                return `<div class="linha-subtarefa ${concluidaClass}" data-tarefa-id="${tarefaId}" data-subtarefa-id="${subtarefa.id}"><input type="checkbox" data-action="toggle-subtarefa" title="Marcar como concluída" ${subtarefa.concluida ? 'checked' : ''}><input type="text" value="${subtarefa.nome}" data-field="nome-subtarefa" placeholder="Descreva a sub-tarefa..."><button class="btn-excluir" data-action="excluir-subtarefa" title="Excluir Sub-tarefa">${this.icons.close}</button></div>`;
+            },
+            attachEventListeners() {
+                document.getElementById('btn-salvar-github').addEventListener('click', () => this.salvarNoGitHub());
+                document.getElementById('btn-novo-projeto').addEventListener('click', () => this.toggleModal(true));
+                document.getElementById('btn-modal-cancelar').addEventListener('click', () => this.toggleModal(false));
+                document.getElementById('modal-novo-projeto').addEventListener('click', (e) => { if (e.target.id === 'modal-novo-projeto') this.toggleModal(false); });
+                document.getElementById('btn-modal-salvar').addEventListener('click', () => { const input = document.getElementById('input-nome-projeto'); if (input.value.trim()) { this.adicionarProjeto(input.value.trim()); this.toggleModal(false); } });
+                document.getElementById('quadro-container').addEventListener('click', e => {
+                    const target = e.target.closest('[data-action]'); if (!target) return;
+                    const action = target.dataset.action; const projetoEl = target.closest('.projeto'); const tarefaEl = target.closest('[data-tarefa-id]');
+                    const projetoId = projetoEl?.dataset.projetoId; const tarefaId = tarefaEl?.dataset.tarefaId;
+                    switch (action) {
+                        case 'excluir-projeto': if (confirm('Tem certeza?')) { this.excluirProjeto(projetoId); } break;
+                        case 'adicionar-tarefa': this.adicionarTarefa(projetoId); break;
+                        case 'excluir-tarefa': if (confirm('Tem certeza?')) { this.excluirTarefa(projetoId, tarefaId); } break;
+                        case 'adicionar-subtarefa': this.adicionarSubtarefa(projetoId, tarefaId); break;
+                        case 'excluir-subtarefa': const stId = target.closest('[data-subtarefa-id]').dataset.subtarefaId; this.excluirSubtarefa(projetoId, tarefaId, stId); break;
+                        case 'toggle-subtarefa': const stEl = target.closest('[data-subtarefa-id]'); this.toggleSubtarefa(projetoId, tarefaId, stEl.dataset.subtarefaId, target.checked); stEl.classList.toggle('concluida', target.checked); break;
+                    }
+                });
+                document.getElementById('quadro-container').addEventListener('change', e => {
+                    const field = e.target.dataset.field; if (!field) return;
+                    const projetoId = e.target.closest('.projeto').dataset.projetoId; const tarefaId = e.target.closest('[data-tarefa-id]')?.dataset.tarefaId;
+                    if (field === "nome-projeto") this.atualizarProjeto(projetoId, 'nome', e.target.value);
+                    else if (field === 'nome-subtarefa') this.atualizarSubtarefa(projetoId, tarefaId, e.target.closest('[data-subtarefa-id]').dataset.subtarefaId, 'nome', e.target.value);
+                    else this.atualizarTarefa(projetoId, tarefaId, field, e.target.value);
+                });
+            },
+            adicionarProjeto(nome) { this.data.projetos.push({ id: this.generateId(), nome: nome, tarefas: [] }); this.render(); },
+            excluirProjeto(id) { this.data.projetos = this.data.projetos.filter(p => p.id !== id); this.render(); },
+            atualizarProjeto(id, campo, valor) { const p = this.data.projetos.find(p => p.id === id); if (p) p[campo] = valor; },
+            adicionarTarefa(pId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas.push({ id: this.generateId(), nome: 'Nova Tarefa', prazo: '', subtarefas: [] }); this.render(); } },
+            excluirTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); if (p) { p.tarefas = p.tarefas.filter(t => t.id !== tId); this.render(); } },
+            atualizarTarefa(pId, tId, campo, valor) { const t = this.findTarefa(pId, tId); if (t) { t[campo] = valor; } },
+            adicionarSubtarefa(pId, tId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas.push({ id: this.generateId(), nome: '', concluida: false }); this.render(); } },
+            excluirSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); if (t) { t.subtarefas = t.subtarefas.filter(st => st.id !== stId); this.render(); } },
+            toggleSubtarefa(pId, tId, stId, concluida) { const st = this.findSubtarefa(pId, tId, stId); if (st) st.concluida = concluida; },
+            atualizarSubtarefa(pId, tId, stId, campo, valor) { const st = this.findSubtarefa(pId, tId, stId); if (st) st[campo] = valor; },
+            findTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); return p ? p.tarefas.find(t => t.id === tId) : null; },
+            findSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); return t ? t.subtarefas.find(st => st.id === stId) : null; }
+        };
+        app.init();
+    });
+    </script>
+</body>
+</html>
