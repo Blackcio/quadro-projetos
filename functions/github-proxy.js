@@ -63,3 +63,4 @@ exports.handler = async function(event, context) {
         };
     }
 };
+// verssão atualizada brute force
