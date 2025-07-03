@@ -20,7 +20,13 @@
           "id": "mco0gn75jmvkpmqea2",
           "nome": "Materiais obra ",
           "prazo": "2025-07-07",
-          "subtarefas": []
+          "subtarefas": [
+            {
+              "id": "mco0he00ugrmaw6wiyb",
+              "nome": "Calço para vidro ",
+              "concluida": false
+            }
+          ]
         }
       ]
     }
