@@ -1,22 +1,15 @@
 // functions/github-proxy.js
 
-// Usando require para compatibilidade máxima com o ambiente da Netlify
 const fetch = require('node-fetch');
 
 exports.handler = async function(event, context) {
-    // Log para ver o evento que a função recebeu
-    console.log(`[PROXY_LOG] Recebida requisição: ${event.httpMethod}`);
-
     const { GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PATH } = process.env;
 
-    // Validação robusta das variáveis de ambiente
+    // --- VERIFICAÇÃO INICIAL ---
     if (!GITHUB_TOKEN || !GITHUB_OWNER || !GITHUB_REPO || !GITHUB_PATH) {
-        const errorMessage = '[PROXY_ERROR] Variáveis de ambiente do GitHub não estão configuradas corretamente na Netlify.';
-        console.error(errorMessage);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: errorMessage })
-        };
+        const errorMsg = "Uma ou mais variáveis de ambiente (GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO, GITHUB_PATH) não estão definidas na Netlify.";
+        console.error("[PROXY_ERROR]", errorMsg);
+        return { statusCode: 500, body: JSON.stringify({ error: errorMsg }) };
     }
 
     const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
@@ -24,7 +17,7 @@ exports.handler = async function(event, context) {
     const headers = {
         'Authorization': `Bearer ${GITHUB_TOKEN}`,
         'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json' // Sempre incluir para PUTs
+        'Content-Type': 'application/json'
     };
     
     const fetchOptions = {
@@ -33,48 +26,43 @@ exports.handler = async function(event, context) {
     };
 
     if (event.httpMethod === 'PUT') {
-        fetchOptions.body = event.body; // O corpo já é uma string JSON do frontend
+        fetchOptions.body = event.body;
     }
+    
+    console.log(`[PROXY_LOG] Chamando ${fetchOptions.method} ${url}`);
 
     try {
-        console.log(`[PROXY_LOG] Fazendo chamada para a API do GitHub: ${fetchOptions.method} ${url}`);
         const response = await fetch(url, fetchOptions);
         
-        const responseBody = await response.text(); // Lê como texto para evitar erro se não for JSON
-        console.log(`[PROXY_LOG] GitHub respondeu com status: ${response.status}`);
-
-        // O frontend lida com 404, apenas repassamos
-        if (response.status === 404) {
-            return {
-                statusCode: 404,
-                body: JSON.stringify({ message: "File not found" })
+        // --- ANÁLISE DETALHADA DA RESPOSTA DO GITHUB ---
+        // Se a resposta NÃO for OK, vamos descobrir exatamente por quê.
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({ message: "Não foi possível ler o corpo do erro como JSON." }));
+            const githubErrorMsg = `Erro da API do GitHub: Status ${response.status}. Mensagem: ${errorBody.message}`;
+            
+            console.error("[PROXY_ERROR]", githubErrorMsg);
+            
+            // Retorna o status e a mensagem de erro originais do GitHub para o frontend
+            return { 
+                statusCode: response.status, 
+                body: JSON.stringify({ error: githubErrorMsg, github_response: errorBody }) 
             };
         }
 
-        if (!response.ok) {
-            const errorMessage = `[PROXY_ERROR] Erro da API do GitHub: ${response.status} - ${responseBody}`;
-            console.error(errorMessage);
-            // Tenta fazer parse do erro, se falhar, usa o texto puro
-            try {
-                 const errorJson = JSON.parse(responseBody);
-                 return { statusCode: response.status, body: JSON.stringify(errorJson) };
-            } catch (e) {
-                 return { statusCode: response.status, body: JSON.stringify({ message: responseBody }) };
-            }
-        }
-        
-        // Se a resposta for OK, o corpo deve ser JSON
+        // Se a resposta for OK, continue normalmente
+        const data = await response.json();
+        console.log(`[PROXY_LOG] Sucesso na chamada para o GitHub. Status: ${response.status}`);
         return {
             statusCode: 200,
-            body: responseBody
+            body: JSON.stringify(data)
         };
 
     } catch (error) {
-        const errorMessage = `[PROXY_ERROR] Erro catastrófico na função: ${error.message}`;
-        console.error(errorMessage);
+        const criticalErrorMsg = `Erro crítico na execução do fetch: ${error.message}`;
+        console.error("[PROXY_ERROR]", criticalErrorMsg);
         return {
-            statusCode: 502,
-            body: JSON.stringify({ error: errorMessage })
+            statusCode: 502, // Bad Gateway
+            body: JSON.stringify({ error: criticalErrorMsg })
         };
     }
 };
