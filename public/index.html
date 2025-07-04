@@ -45,12 +45,18 @@
         .btn.btn-alteracao-pendente:hover {
     background-color: #f5b00f;
     box-shadow: 0 4px 10px rgba(247, 185, 40, 0.3); }
-        .projeto { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin-bottom: 25px; box-shadow: 0 2px 4px var(--cor-sombra); overflow: hidden; }
-        .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--cor-borda); }
+        .projeto { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin-bottom: 25px; box-shadow: 0 2px 4px var(--cor-sombra); overflow: hidden; transition: all var(--velocidade-transicao) ease; }
+        .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--cor-borda); cursor: pointer; }
+        .projeto-header-main { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
+        .projeto-toggle-icon { transition: transform var(--velocidade-transicao) ease; }
         .projeto-titulo-input { font-size: 19px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
         .projeto-titulo-input:focus { outline: none; background-color: var(--cor-primaria-clara); }
-        .projeto-header { cursor: grab; }
-        .tarefas-container { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 15px; }
+        .projeto-header-acoes { display: flex; align-items: center; }
+        .tarefas-container, .projeto-footer { transition: max-height 0.3s ease-out, padding 0.3s ease-out, opacity 0.2s ease-out; max-height: 1000vh; /* Um valor alto para garantir que tudo caiba */ opacity: 1; }
+        .projeto.recolhido { border-bottom-color: transparent; }
+        .projeto.recolhido .tarefas-container, .projeto.recolhido .projeto-footer { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; }
+        .projeto.recolhido .projeto-toggle-icon { transform: rotate(-90deg); }
+        .tarefas-container { padding: 18px; display: flex; flex-direction: column; gap: 15px; }
         .card-tarefa { background-color: var(--cor-fundo); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); border-left: 4px solid transparent; transition: border-color var(--velocidade-transicao); }
         .card-tarefa.prazo-vencido { border-left-color: var(--cor-perigo); }
         .card-tarefa.prazo-proximo { border-left-color: #f7b928; }
@@ -147,7 +153,8 @@
                 moon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216.7,152.55A95.78,95.78,0,0,1,128,224a96,96,0,0,1-95.31-71.18a12,12,0,0,1,15.87-15.87A71.82,71.82,0,0,0,128,152a72.08,72.08,0,0,0,47.45-16.55,12,12,0,0,1,16.9,17.1Z"></path></svg>`,
                 save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`,
                 calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208,32H184V24a12,12,0,0,0-24,0v8H96V24a12,12,0,0,0-24,0v8H48A20,20,0,0,0,28,52V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V52A20,20,0,0,0,208,32Zm-4,172H52V88H204Zm0-144H52V56H72v8a12,12,0,0,0,24,0V56h64v8a12,12,0,0,0,24,0V56h20Z"></path></svg>`,
-                spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M232,128a104,104,0,0,1-208,0c0-41,23.81-78.36,60.66-95.27a12,12,0,0,1,8.68,22.54C67.43,69.15,44,96.63,44,128a84,84,0,0,0,168,0c0-31.37-23.43-58.85-51.34-72.73a12,12,0,0,1,8.68-22.54C208.19,49.64,232,87,232,128Z"><animateTransform attributeName="transform" type="rotate" from="0 128 128" to="360 128 128" dur="1s" repeatCount="indefinite"></animateTransform></path></svg>`
+                spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M232,128a104,104,0,0,1-208,0c0-41,23.81-78.36,60.66-95.27a12,12,0,0,1,8.68,22.54C67.43,69.15,44,96.63,44,128a84,84,0,0,0,168,0c0-31.37-23.43-58.85-51.34-72.73a12,12,0,0,1,8.68-22.54C208.19,49.64,232,87,232,128Z"><animateTransform attributeName="transform" type="rotate" from="0 128 128" to="360 128 128" dur="1s" repeatCount="indefinite"></animateTransform></path></svg>`,
+                chevron: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M165.66,202.34a8,8,0,0,1-11.32,0L80,128,154.34,53.66a8,8,0,0,1,11.32,11.32L97,128l68.66,63.02A8,8,0,0,1,165.66,202.34Z" transform="rotate(270 128 128)"></path></svg>`
             },
 
             mostrarNotificacao(mensagem, tipo = 'sucesso') {
@@ -298,7 +305,8 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                 if (this.data.projetos.length === 0) { this.alertaInicial(); return; }
                 this.data.projetos.forEach(projeto => {
                     const projetoEl = document.createElement('div');
-                    projetoEl.className = 'projeto';
+                    // Adiciona a classe 'recolhido' por padrão
+                    projetoEl.className = 'projeto recolhido';
                     projetoEl.dataset.projetoId = projeto.id;
                     
                     const tarefasContainer = document.createElement('div');
@@ -309,9 +317,14 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     });
 
                     projetoEl.innerHTML = `
-                        <div class="projeto-header">
-                            <input type="text" value="${projeto.nome}" data-field="nome-projeto" class="projeto-titulo-input" title="Clique para editar o nome do projeto">
-                            <button class="btn-excluir" data-action="excluir-projeto" title="Excluir Projeto">${this.icons.trash}</button>
+                        <div class="projeto-header" data-action="toggle-projeto">
+                            <div class="projeto-header-main">
+                                <span class="projeto-toggle-icon">${this.icons.chevron}</span>
+                                <input type="text" value="${projeto.nome}" data-field="nome-projeto" class="projeto-titulo-input" title="Editar nome do projeto">
+                            </div>
+                            <div class="projeto-header-acoes">
+                                <button class="btn-excluir" data-action="excluir-projeto" title="Excluir Projeto">${this.icons.trash}</button>
+                            </div>
                         </div>`;
                     
                     projetoEl.appendChild(tarefasContainer);
@@ -410,6 +423,11 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     const subtarefaId = subtarefaEl?.dataset.subtarefaId;
 
                     switch (action) {
+                        case 'toggle-projeto':
+                            // Impede que o toggle ocorra ao clicar no input ou no botão de excluir
+                            if (e.target.closest('input, .btn-excluir')) return;
+                            projetoEl.classList.toggle('recolhido');
+                            break;
                         case 'excluir-projeto': if (confirm('Tem certeza que deseja excluir este projeto e todas as suas tarefas?')) { this.excluirProjeto(projetoId); } break;
                         case 'adicionar-tarefa': this.adicionarTarefa(projetoId); break;
                         case 'excluir-tarefa': if (confirm('Tem certeza que deseja excluir esta tarefa?')) { this.excluirTarefa(projetoId, tarefaId); } break;
@@ -507,7 +525,7 @@ window.addEventListener('beforeunload', (e) => {
                 // 1. Tornar os PROJETOS arrastáveis
                 new Sortable(quadroContainer, {
                     animation: 150,
-                    handle: '.projeto-header',
+                    handle: '.projeto-header-main', // Usar o novo container do título como handle
                     onEnd: (evt) => {
                         const [movedItem] = this.data.projetos.splice(evt.oldIndex, 1);
                         this.data.projetos.splice(evt.newIndex, 0, movedItem);
