@@ -51,7 +51,14 @@
     {
       "id": "mcosfeugamfr1c81tf",
       "nome": "Rancho Queimado",
-      "tarefas": []
+      "tarefas": [
+        {
+          "id": "mcosflsyx8y9qhqch3f",
+          "nome": "Ver porta janela para fixo",
+          "prazo": "",
+          "subtarefas": []
+        }
+      ]
     }
   ]
 }
