@@ -42,22 +42,25 @@
         .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--cor-borda); }
         .projeto-titulo-input { font-size: 19px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
         .projeto-titulo-input:focus { outline: none; background-color: var(--cor-primaria-clara); }
-        .tabela-tarefas { display: grid; }
-        .tabela-header { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; background-color: var(--cor-fundo); font-weight: 500; font-size: 12px; color: var(--cor-texto-secundario); text-transform: uppercase; letter-spacing: 0.5px; }
-        .tabela-header > div { padding: 10px 15px; }
-        .linha-tarefa { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; align-items: center; border-bottom: 1px solid var(--cor-borda); }
-        .linha-tarefa:last-child { border-bottom: none; }
-        .celula { padding: 6px 15px; display: flex; align-items: center; min-height: 52px; }
-        .celula:first-child { font-weight: 500; }
-        .celula input { width: 100%; border: 1px solid transparent; padding: 7px; border-radius: 4px; font-size: 14px; background-color: transparent; font-family: 'Inter', sans-serif; }
-        .celula input:focus { outline: none; border: 1px solid var(--cor-primaria); background-color: var(--cor-branco); box-shadow: 0 0 0 2px var(--cor-primaria-clara); }
-        .celula-acoes { justify-content: center; gap: 6px; }
-        .linha-subtarefa { display: flex; align-items: center; gap: 8px; background-color: var(--cor-fundo); padding: 8px 15px 8px 35px; border-bottom: 1px solid var(--cor-borda); }
+        .tarefas-container { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 15px; }
+        .card-tarefa { background-color: var(--cor-fundo); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); }
+        .card-tarefa-header { display: flex; align-items: center; gap: 10px; padding: 12px; }
+        .card-tarefa-header input[type="text"] { flex-grow: 1; border: 1px solid transparent; background: transparent; font-size: 15px; font-weight: 500; padding: 6px; border-radius: 4px; }
+        .card-tarefa-header input[type="text"]:focus { background-color: var(--cor-branco); border-color: var(--cor-primaria); }
+        .card-tarefa-header .prazo-input { border: 1px solid var(--cor-borda); border-radius: 4px; padding: 5px 8px; font-size: 13px; color: var(--cor-texto-secundario); width: 135px; }
+        .card-tarefa-header .btn-excluir { margin-left: 5px; }
+        .subtarefas-lista { padding: 0 12px 12px; }
+        .linha-subtarefa { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
         .linha-subtarefa input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--cor-primaria); }
-        .linha-subtarefa input[type="text"] { flex-grow: 1; border: none; background: transparent; font-size: 13px; }
+        .linha-subtarefa input[type="text"] { flex-grow: 1; border: none; background: transparent; font-size: 14px; padding: 4px; border-radius: 3px; }
+        .linha-subtarefa input[type="text"]:focus { background-color: var(--cor-branco); outline: 1px solid var(--cor-borda); }
         .linha-subtarefa.concluida input[type="text"] { text-decoration: line-through; color: var(--cor-texto-secundario); }
-        .projeto-footer { padding: 8px 18px; }
-        .btn-adicionar-tarefa { background: none; border: none; color: var(--cor-primaria); cursor: pointer; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .linha-subtarefa .btn-excluir { visibility: hidden; opacity: 0; transition: all var(--velocidade-transicao); }
+        .linha-subtarefa:hover .btn-excluir { visibility: visible; opacity: 1; }
+        .card-tarefa-footer { padding: 0 12px 12px; display: flex; gap: 15px; }
+        .btn-adicionar-subtarefa, .btn-adicionar-tarefa { background: none; border: none; color: var(--cor-primaria); cursor: pointer; font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 4px; }
+        .btn-adicionar-subtarefa:hover, .btn-adicionar-tarefa:hover { background-color: var(--cor-primaria-clara); }
+        .projeto-footer { padding: 12px 18px; border-top: 1px solid var(--cor-borda); background-color: var(--cor-fundo); }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity var(--velocidade-transicao) ease; }
         .modal-overlay.visivel { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--cor-branco); padding: 30px; border-radius: var(--raio-borda); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transform: scale(0.95); transition: transform var(--velocidade-transicao) ease; }
@@ -214,9 +217,14 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
             renderError(mensagem) { document.getElementById('quadro-container').innerHTML = `<p style="text-align:center; color: var(--cor-perigo); padding: 40px; background: var(--cor-branco); border-radius: var(--raio-borda); border: 1px dashed var(--cor-perigo);">${mensagem}</p>`; },
             alertaInicial() {
                 document.getElementById('quadro-container').innerHTML = `<p style="text-align:center; color: var(--cor-texto-secundario); padding: 40px 20px; background: var(--cor-branco); border-radius: var(--raio-borda); border: 1px dashed var(--cor-borda);">Nenhum projeto por aqui. Que tal <a href="#" id="link-criar-primeiro">criar o primeiro</a>?</p>`;
-                document.getElementById('link-criar-primeiro')?.addEventListener('click', (e) => { e.preventDefault(); this.toggleModal(true); });
+                document.getElementById('link-criar-primeiro')?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Link "criar o primeiro" clicado!');
+                    this.toggleModal(true);
+                });
             },
             toggleModal(show) {
+                console.log(`Chamando toggleModal com: ${show}`);
                 const modal = document.getElementById('modal-novo-projeto');
                 const input = document.getElementById('input-nome-projeto');
                 if (show) { modal.classList.add('visivel'); input.focus(); } else { modal.classList.remove('visivel'); input.value = ''; }
@@ -248,7 +256,7 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     
                     const footer = document.createElement('div');
                     footer.className = 'projeto-footer';
-                    footer.innerHTML = `<button class="btn-adicionar-tarefa" data-action="adicionar-tarefa">${this.icons.add} Adicionar Tarefa</button>`;
+                    footer.innerHTML = `<button class="btn-adicionar-tarefa" data-action="adicionar-tarefa">${this.icons.add} Tarefa</button>`;
                     projetoEl.appendChild(footer);
 
                     container.appendChild(projetoEl);
@@ -259,26 +267,21 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                 const tarefaEl = document.createElement('div');
                 tarefaEl.className = 'card-tarefa';
                 tarefaEl.dataset.tarefaId = tarefa.id;
-                tarefaEl.dataset.projetoId = projetoId; // Adiciona para facilitar o event handling
+                tarefaEl.dataset.projetoId = projetoId;
 
                 const subtarefasHTML = tarefa.subtarefas.map(st => this.getSubtarefaHTML(tarefa.id, st)).join('');
 
                 tarefaEl.innerHTML = `
                     <div class="card-tarefa-header">
-                        <div class="card-tarefa-header-main">
-                            <input type="text" value="${tarefa.nome}" data-field="nome" placeholder="Nome da tarefa...">
-                        </div>
-                        <div class="card-tarefa-prazo">
-                            <div class="prazo-label">${this.icons.calendar} Prazo</div>
-                            <input type="date" class="prazo-input" value="${tarefa.prazo || ''}" data-field="prazo">
-                        </div>
+                        <input type="text" value="${tarefa.nome}" data-field="nome" placeholder="Nome da tarefa..." class="nome-tarefa-input">
+                        <input type="date" class="prazo-input" value="${tarefa.prazo || ''}" data-field="prazo" title="Definir prazo">
+                        <button class="btn-excluir" data-action="excluir-tarefa" title="Excluir Tarefa">${this.icons.trash}</button>
                     </div>
                     <div class="subtarefas-lista">
                         ${subtarefasHTML}
                     </div>
                     <div class="card-tarefa-footer">
-                        <button class="btn-acao" data-action="adicionar-subtarefa" title="Adicionar Sub-tarefa">${this.icons.addSubtask}</button>
-                        <button class="btn-acao" data-action="excluir-tarefa" title="Excluir Tarefa">${this.icons.trash}</button>
+                        <button class="btn-adicionar-subtarefa" data-action="adicionar-subtarefa">${this.icons.addSubtask} sub-tarefa</button>
                     </div>
                 `;
                 return tarefaEl;
@@ -294,8 +297,12 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     </div>`;
             },
             attachEventListeners() {
+                console.log('Anexando event listeners...');
                 document.getElementById('btn-salvar-github').addEventListener('click', () => this.salvarNoGitHub());
-                document.getElementById('btn-novo-projeto').addEventListener('click', () => this.toggleModal(true));
+                document.getElementById('btn-novo-projeto').addEventListener('click', () => {
+                    console.log('Botão "Novo Projeto" clicado!');
+                    this.toggleModal(true);
+                });
                 document.getElementById('btn-modal-cancelar').addEventListener('click', () => this.toggleModal(false));
                 document.getElementById('modal-novo-projeto').addEventListener('click', (e) => { if (e.target.id === 'modal-novo-projeto') this.toggleModal(false); });
                 document.getElementById('btn-modal-salvar').addEventListener('click', () => { const input = document.getElementById('input-nome-projeto'); if (input.value.trim()) { this.adicionarProjeto(input.value.trim()); this.toggleModal(false); } });
