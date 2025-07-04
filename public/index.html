@@ -15,6 +15,11 @@
             --cor-sombra: rgba(26, 26, 26, 0.07); --cor-branco: #ffffff; --cor-perigo: #e2445c;
             --raio-borda: 8px; --velocidade-transicao: 0.2s;
         }
+        body.dark-mode {
+            --cor-primaria: #0a84ff; --cor-primaria-clara: #1c3d5f; --cor-fundo: #1c1c1e;
+            --cor-borda: #3a3a3c; --cor-texto-principal: #f2f2f7; --cor-texto-secundario: #8e8e93;
+            --cor-sombra: rgba(0, 0, 0, 0.2); --cor-branco: #2c2c2e;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { font-family: 'Inter', sans-serif; background-color: var(--cor-fundo); color: var(--cor-texto-principal); line-height: 1.5; }
@@ -22,8 +27,10 @@
         header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--cor-borda); }
         header h1 { color: var(--cor-texto-principal); font-size: 24px; }
         header .acoes-globais { display: flex; gap: 10px; flex-wrap: wrap; }
+        #btn-toggle-dark-mode { background: none; border: 1px solid var(--cor-borda); color: var(--cor-texto-secundario); padding: 8px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #btn-toggle-dark-mode:hover { background-color: var(--cor-fundo); border-color: #c1c7d0; }
         .btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--cor-primaria); color: var(--cor-branco); border: none; padding: 9px 15px; border-radius: var(--raio-borda); cursor: pointer; font-weight: 500; font-size: 14px; text-decoration: none; transition: all var(--velocidade-transicao) ease; }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 115, 234, 0.2); }
+        body:not(.dark-mode) .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 115, 234, 0.2); }
         .btn:disabled { background-color: var(--cor-texto-secundario); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
         .btn-secundario { background-color: var(--cor-branco); color: var(--cor-texto-secundario); border: 1px solid var(--cor-borda); }
         .btn-secundario:hover { background-color: var(--cor-fundo); border-color: #c1c7d0; box-shadow: none; }
@@ -42,9 +49,12 @@
         .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--cor-borda); }
         .projeto-titulo-input { font-size: 19px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
         .projeto-titulo-input:focus { outline: none; background-color: var(--cor-primaria-clara); }
+        .projeto-header { cursor: grab; }
         .tarefas-container { padding: 0 18px 18px; display: flex; flex-direction: column; gap: 15px; }
-        .card-tarefa { background-color: var(--cor-fundo); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); }
-        .card-tarefa-header { display: flex; align-items: center; gap: 10px; padding: 12px; }
+        .card-tarefa { background-color: var(--cor-fundo); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); border-left: 4px solid transparent; transition: border-color var(--velocidade-transicao); }
+        .card-tarefa.prazo-vencido { border-left-color: var(--cor-perigo); }
+        .card-tarefa.prazo-proximo { border-left-color: #f7b928; }
+        .card-tarefa-header { display: flex; align-items: center; gap: 10px; padding: 12px; cursor: grab; }
         .card-tarefa-header input[type="text"] { flex-grow: 1; border: 1px solid transparent; background: transparent; font-size: 15px; font-weight: 500; padding: 6px; border-radius: 4px; }
         .card-tarefa-header input[type="text"]:focus { background-color: var(--cor-branco); border-color: var(--cor-primaria); }
         .card-tarefa-header .prazo-input { border: 1px solid var(--cor-borda); border-radius: 4px; padding: 5px 8px; font-size: 13px; color: var(--cor-texto-secundario); width: 135px; }
@@ -57,6 +67,8 @@
         .linha-subtarefa.concluida input[type="text"] { text-decoration: line-through; color: var(--cor-texto-secundario); }
         .linha-subtarefa .btn-excluir { visibility: hidden; opacity: 0; transition: all var(--velocidade-transicao); }
         .linha-subtarefa:hover .btn-excluir { visibility: visible; opacity: 1; }
+        .progress-bar-container { background-color: #e9ecef; border-radius: 4px; height: 8px; margin: 4px 12px 12px; overflow: hidden; }
+        .progress-bar { background-color: var(--cor-primaria); height: 100%; width: 0%; transition: width var(--velocidade-transicao) ease; }
         .card-tarefa-footer { padding: 0 12px 12px; display: flex; gap: 15px; }
         .btn-adicionar-subtarefa, .btn-adicionar-tarefa { background: none; border: none; color: var(--cor-primaria); cursor: pointer; font-weight: 500; font-size: 13px; display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 4px; }
         .btn-adicionar-subtarefa:hover, .btn-adicionar-tarefa:hover { background-color: var(--cor-primaria-clara); }
@@ -68,6 +80,36 @@
         .modal-content h3 { margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-content input { width: 100%; border: 1px solid var(--cor-borda); padding: 12px; border-radius: var(--raio-borda); font-size: 16px; margin-bottom: 20px; }
         .modal-acoes { display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* --- Estilos para Notificações (Toast) --- */
+        #notificacao-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: var(--raio-borda);
+            color: var(--cor-branco);
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideIn 0.3s forwards, fadeOut 0.3s 4s forwards;
+        }
+        .toast.sucesso { background-color: #28a745; }
+        .toast.erro { background-color: var(--cor-perigo); }
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100%); }
+        }
         /* Media queries podem ser ajustadas depois, se necessário */
     </style>
 </head>
@@ -76,6 +118,7 @@
         <header>
             <h1>Quadro de Projetos</h1>
             <div class="acoes-globais">
+                <button id="btn-toggle-dark-mode" title="Alternar tema"></button>
                 <button class="btn" id="btn-salvar-github"></button>
                 <button class="btn" id="btn-novo-projeto"></button>
             </div>
@@ -83,7 +126,9 @@
         <main id="quadro-container"></main>
     </div>
     <div id="modal-novo-projeto" class="modal-overlay"></div>
+    <div id="notificacao-container"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Objeto GITHUB_CONFIG foi REMOVIDO daqui para segurança.
@@ -98,8 +143,24 @@
                 addSubtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M228,80a12,12,0,0,1-12,12H160v28h56a12,12,0,0,1,0,24H160v28h56a12,12,0,0,1,0,24H148a12,12,0,0,1-12-12V92H40a12,12,0,0,1,0-24H136V40a12,12,0,0,1,24,0V68h56A12,12,0,0,1,228,80Z"></path></svg>`,
                 trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,160H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>`,
                 close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"></path></svg>`,
+                sun: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M128,84a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,84Zm0,72a28,28,0,1,1,28-28A28,28,0,0,1,128,156ZM232,128A104.11,104.11,0,0,1,128,232,104.11,104.11,0,0,1,24,128,104.11,104.11,0,0,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>`,
+                moon: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216.7,152.55A95.78,95.78,0,0,1,128,224a96,96,0,0,1-95.31-71.18a12,12,0,0,1,15.87-15.87A71.82,71.82,0,0,0,128,152a72.08,72.08,0,0,0,47.45-16.55,12,12,0,0,1,16.9,17.1Z"></path></svg>`,
                 save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`,
-                calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208,32H184V24a12,12,0,0,0-24,0v8H96V24a12,12,0,0,0-24,0v8H48A20,20,0,0,0,28,52V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V52A20,20,0,0,0,208,32Zm-4,172H52V88H204Zm0-144H52V56H72v8a12,12,0,0,0,24,0V56h64v8a12,12,0,0,0,24,0V56h20Z"></path></svg>`
+                calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208,32H184V24a12,12,0,0,0-24,0v8H96V24a12,12,0,0,0-24,0v8H48A20,20,0,0,0,28,52V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V52A20,20,0,0,0,208,32Zm-4,172H52V88H204Zm0-144H52V56H72v8a12,12,0,0,0,24,0V56h64v8a12,12,0,0,0,24,0V56h20Z"></path></svg>`,
+                spinner: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M232,128a104,104,0,0,1-208,0c0-41,23.81-78.36,60.66-95.27a12,12,0,0,1,8.68,22.54C67.43,69.15,44,96.63,44,128a84,84,0,0,0,168,0c0-31.37-23.43-58.85-51.34-72.73a12,12,0,0,1,8.68-22.54C208.19,49.64,232,87,232,128Z"><animateTransform attributeName="transform" type="rotate" from="0 128 128" to="360 128 128" dur="1s" repeatCount="indefinite"></animateTransform></path></svg>`
+            },
+
+            mostrarNotificacao(mensagem, tipo = 'sucesso') {
+                const container = document.getElementById('notificacao-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${tipo}`;
+                toast.textContent = mensagem;
+                container.appendChild(toast);
+
+                // Remove o toast após a animação de fadeOut terminar (4s + 0.3s)
+                setTimeout(() => {
+                    toast.remove();
+                }, 4300);
             },
 
             marcarAlteracao() {
@@ -110,6 +171,7 @@
     },
             
             async init() {
+                this.setupDarkMode();
                 this.preencherElementosIniciais();
                 this.renderLoading();
                 this.attachEventListeners();
@@ -154,7 +216,7 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
             async salvarNoGitHub() {
                 const btnSalvar = document.getElementById('btn-salvar-github');
                 btnSalvar.disabled = true;
-                btnSalvar.innerHTML = 'Salvando...';
+                btnSalvar.innerHTML = `${this.icons.spinner} Salvando...`;
                 
                 const jsonString = JSON.stringify(this.data, null, 2);
                 const contentEncoded = window.btoa(unescape(encodeURIComponent(jsonString)));
@@ -190,17 +252,17 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                         console.log('NOVO SHA definido como:', this.sha);
                         
                         this.alteracoesNaoSalvas = false;
-    const btnSalvar = document.getElementById('btn-salvar-github');
-    btnSalvar.classList.remove('btn-alteracao-pendente');
-    btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
+                        const btnSalvar = document.getElementById('btn-salvar-github');
+                        btnSalvar.classList.remove('btn-alteracao-pendente');
+                        btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
 
-                        alert('Dados salvos no GitHub com sucesso!');
+                        this.mostrarNotificacao('Dados salvos no GitHub com sucesso!', 'sucesso');
                     } else {
                         throw new Error('Resposta do proxy não continha o novo SHA.');
                     }
                 } catch (error) {
                     console.error('Erro detalhado ao salvar:', error);
-                    alert('Falha ao salvar no GitHub. Tente novamente.\n\n' + error.message);
+                    this.mostrarNotificacao(`Falha ao salvar no GitHub. ${error.message}`, 'erro');
                 } finally {
                     btnSalvar.disabled = false;
                     btnSalvar.innerHTML = `${this.icons.save} Salvar Alterações`;
@@ -261,15 +323,44 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
 
                     container.appendChild(projetoEl);
                 });
+                this.initSortable();
             },
 
             getTarefaElement(projetoId, tarefa) {
                 const tarefaEl = document.createElement('div');
                 tarefaEl.className = 'card-tarefa';
+
+                if (tarefa.prazo) {
+                    const hoje = new Date();
+                    const prazo = new Date(tarefa.prazo + 'T23:59:59'); // Considerar o fim do dia
+                    hoje.setHours(0, 0, 0, 0); // Normalizar para o início do dia
+
+                    const diffTime = prazo.getTime() - hoje.getTime();
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                    if (diffDays < 0) {
+                        tarefaEl.classList.add('prazo-vencido');
+                    } else if (diffDays <= 2) { // Hoje, amanhã ou depois de amanhã
+                        tarefaEl.classList.add('prazo-proximo');
+                    }
+                }
+
                 tarefaEl.dataset.tarefaId = tarefa.id;
                 tarefaEl.dataset.projetoId = projetoId;
 
                 const subtarefasHTML = tarefa.subtarefas.map(st => this.getSubtarefaHTML(tarefa.id, st)).join('');
+
+                const totalSubtarefas = tarefa.subtarefas.length;
+                let progressoHTML = '';
+                if (totalSubtarefas > 0) {
+                    const concluidas = tarefa.subtarefas.filter(st => st.concluida).length;
+                    const progresso = (concluidas / totalSubtarefas) * 100;
+                    progressoHTML = `
+                        <div class="progress-bar-container" title="${concluidas} de ${totalSubtarefas} concluídas">
+                            <div class="progress-bar" style="width: ${progresso}%;"></div>
+                        </div>
+                    `;
+                }
 
                 tarefaEl.innerHTML = `
                     <div class="card-tarefa-header">
@@ -280,6 +371,7 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     <div class="subtarefas-lista">
                         ${subtarefasHTML}
                     </div>
+                    ${progressoHTML}
                     <div class="card-tarefa-footer">
                         <button class="btn-adicionar-subtarefa" data-action="adicionar-subtarefa">${this.icons.addSubtask} sub-tarefa</button>
                     </div>
@@ -323,7 +415,23 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                         case 'excluir-tarefa': if (confirm('Tem certeza que deseja excluir esta tarefa?')) { this.excluirTarefa(projetoId, tarefaId); } break;
                         case 'adicionar-subtarefa': this.adicionarSubtarefa(projetoId, tarefaId); break;
                         case 'excluir-subtarefa': this.excluirSubtarefa(projetoId, tarefaId, subtarefaId); break;
-                        case 'toggle-subtarefa': this.toggleSubtarefa(projetoId, tarefaId, subtarefaId, target.checked); subtarefaEl.classList.toggle('concluida', target.checked); break;
+                        case 'toggle-subtarefa': 
+                            this.toggleSubtarefa(projetoId, tarefaId, subtarefaId, target.checked); 
+                            subtarefaEl.classList.toggle('concluida', target.checked); 
+                            
+                            // Atualiza a barra de progresso dinamicamente
+                            const tarefa = this.findTarefa(projetoId, tarefaId);
+                            if (tarefa && tarefa.subtarefas.length > 0) {
+                                const total = tarefa.subtarefas.length;
+                                const concluidas = tarefa.subtarefas.filter(st => st.concluida).length;
+                                const progresso = (concluidas / total) * 100;
+                                const progressBarContainer = tarefaEl.querySelector('.progress-bar-container');
+                                if (progressBarContainer) {
+                                    progressBarContainer.querySelector('.progress-bar').style.width = `${progresso}%`;
+                                    progressBarContainer.title = `${concluidas} de ${total} concluídas`;
+                                }
+                            }
+                            break;
                     }
                 });
                 document.getElementById('quadro-container').addEventListener('change', e => {
@@ -357,7 +465,85 @@ window.addEventListener('beforeunload', (e) => {
             toggleSubtarefa(pId, tId, stId, concluida) { const st = this.findSubtarefa(pId, tId, stId); if (st) st.concluida = concluida; this.marcarAlteracao(); },
             atualizarSubtarefa(pId, tId, stId, campo, valor) { const st = this.findSubtarefa(pId, tId, stId); if (st) st[campo] = valor; this.marcarAlteracao(); },
             findTarefa(pId, tId) { const p = this.data.projetos.find(p => p.id === pId); return p ? p.tarefas.find(t => t.id === tId) : null; },
-            findSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); return t ? t.subtarefas.find(st => st.id === stId) : null; }
+            findSubtarefa(pId, tId, stId) { const t = this.findTarefa(pId, tId); return t ? t.subtarefas.find(st => st.id === stId) : null; },
+
+            setupDarkMode() {
+                const btn = document.getElementById('btn-toggle-dark-mode');
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const savedTheme = localStorage.getItem('theme');
+
+                const setTheme = (isDark) => {
+                    if (isDark) {
+                        document.body.classList.add('dark-mode');
+                        btn.innerHTML = this.icons.sun;
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        btn.innerHTML = this.icons.moon;
+                        localStorage.setItem('theme', 'light');
+                    }
+                };
+
+                btn.addEventListener('click', () => {
+                    setTheme(!document.body.classList.contains('dark-mode'));
+                });
+
+                // Define o tema inicial
+                if (savedTheme) {
+                    setTheme(savedTheme === 'dark');
+                } else {
+                    setTheme(prefersDark);
+                }
+            },
+            
+            initSortable() {
+                if (!window.Sortable) {
+                    console.error('SortableJS não foi carregado.');
+                    return;
+                }
+
+                const quadroContainer = document.getElementById('quadro-container');
+                
+                // 1. Tornar os PROJETOS arrastáveis
+                new Sortable(quadroContainer, {
+                    animation: 150,
+                    handle: '.projeto-header',
+                    onEnd: (evt) => {
+                        const [movedItem] = this.data.projetos.splice(evt.oldIndex, 1);
+                        this.data.projetos.splice(evt.newIndex, 0, movedItem);
+                        this.marcarAlteracao();
+                    }
+                });
+
+                // 2. Tornar as TAREFAS arrastáveis
+                document.querySelectorAll('.tarefas-container').forEach(container => {
+                    new Sortable(container, {
+                        group: 'tarefas',
+                        animation: 150,
+                        handle: '.card-tarefa-header',
+                        onEnd: (evt) => {
+                            const { item, from, to, oldIndex, newIndex } = evt;
+                            const oldProjetoId = from.closest('.projeto').dataset.projetoId;
+                            const newProjetoId = to.closest('.projeto').dataset.projetoId;
+                            const tarefaId = item.dataset.tarefaId;
+
+                            const oldProjeto = this.data.projetos.find(p => p.id === oldProjetoId);
+                            const tarefaIndex = oldProjeto.tarefas.findIndex(t => t.id === tarefaId);
+                            const [tarefa] = oldProjeto.tarefas.splice(tarefaIndex, 1);
+
+                            const newProjeto = this.data.projetos.find(p => p.id === newProjetoId);
+                            newProjeto.tarefas.splice(newIndex, 0, tarefa);
+                            
+                            this.marcarAlteracao();
+                            
+                            // Se a tarefa mudou de projeto, é mais seguro re-renderizar tudo
+                            if (oldProjetoId !== newProjetoId) {
+                                this.render();
+                            }
+                        }
+                    });
+                });
+            }
         };
         app.init();
     });
