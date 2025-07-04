@@ -305,8 +305,8 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                 if (this.data.projetos.length === 0) { this.alertaInicial(); return; }
                 this.data.projetos.forEach(projeto => {
                     const projetoEl = document.createElement('div');
-                    // Adiciona a classe 'recolhido' por padrão
-                    projetoEl.className = 'projeto recolhido';
+                    // A classe 'recolhido' será gerenciada dinamicamente
+                    projetoEl.className = 'projeto';
                     projetoEl.dataset.projetoId = projeto.id;
                     
                     const tarefasContainer = document.createElement('div');
