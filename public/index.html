@@ -22,7 +22,7 @@
         header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--cor-borda); }
         header h1 { color: var(--cor-texto-principal); font-size: 26px; }
         header .acoes-globais { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--cor-primaria); color: var(--cor-branco); border: none; padding: 10px 16px; border-radius: var(--raio-borda); cursor: pointer; font-weight: 500; font-size: 14px; text-decoration: none; transition: all var(--velocidade-transicao) ease; }
+        .btn { display: inline-flex; align-items: center; gap: 8px; background-color: var(--cor-primaria); color: var(--cor-branco); border: none; padding: 10px 16px; border-radius: var(--raio-borda); cursor: pointer; font-weight: 600; font-size: 14px; text-decoration: none; transition: all var(--velocidade-transicao) ease; }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 115, 234, 0.2); }
         .btn:disabled { background-color: var(--cor-texto-secundario); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
         .btn-secundario { background-color: var(--cor-branco); color: var(--cor-texto-secundario); border: 1px solid var(--cor-borda); }
@@ -31,33 +31,34 @@
         .btn-acao:hover, .btn-excluir:hover { background-color: #e9ecef; color: var(--cor-texto-principal); }
         .btn-excluir:hover { color: var(--cor-perigo); }
         .btn-acao svg, .btn-excluir svg { width: 18px; height: 18px; }
-        .btn.btn-alteracao-pendente {
-    background-color: #f7b928; /* Uma cor de "aviso", como amarelo/laranja */
-    color: #1a1a1a;
-    font-weight: 600; }
-        .btn.btn-alteracao-pendente:hover {
-    background-color: #f5b00f;
-    box-shadow: 0 4px 10px rgba(247, 185, 40, 0.3); }
-        .projeto { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin-bottom: 30px; box-shadow: 0 2px 4px var(--cor-sombra); overflow: hidden; }
-        .projeto-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--cor-borda); }
-        .projeto-titulo-input { font-size: 20px; font-weight: 600; color: var(--cor-texto-principal); border: none; background: transparent; padding: 5px; width: 100%; border-radius: 4px; }
-        .projeto-titulo-input:focus { outline: none; background-color: var(--cor-primaria-clara); }
-        .tabela-tarefas { display: grid; }
-        .tabela-header { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; background-color: var(--cor-fundo); font-weight: 500; font-size: 13px; color: var(--cor-texto-secundario); text-transform: uppercase; letter-spacing: 0.5px; }
-        .tabela-header > div { padding: 12px 15px; }
-        .linha-tarefa { display: grid; grid-template-columns: minmax(300px, 3fr) 1.5fr 100px; align-items: center; border-bottom: 1px solid var(--cor-borda); }
-        .linha-tarefa:last-child { border-bottom: none; }
-        .celula { padding: 8px 15px; display: flex; align-items: center; min-height: 54px; }
-        .celula:first-child { font-weight: 500; }
-        .celula input { width: 100%; border: 1px solid transparent; padding: 8px; border-radius: 4px; font-size: 14px; background-color: transparent; font-family: 'Inter', sans-serif; }
-        .celula input:focus { outline: none; border: 1px solid var(--cor-primaria); background-color: var(--cor-branco); box-shadow: 0 0 0 2px var(--cor-primaria-clara); }
-        .celula-acoes { justify-content: center; gap: 10px; }
-        .linha-subtarefa { display: flex; align-items: center; gap: 10px; background-color: var(--cor-fundo); padding: 10px 15px 10px 50px; border-bottom: 1px solid var(--cor-borda); }
+        .btn.btn-alteracao-pendente { background-color: #f7b928; color: #1a1a1a; font-weight: 600; }
+        .btn.btn-alteracao-pendente:hover { background-color: #f5b00f; box-shadow: 0 4px 10px rgba(247, 185, 40, 0.3); }
+
+        /* --- NOVOS ESTILOS --- */
+        #quadro-container { display: flex; flex-direction: column; gap: 30px; }
+        .projeto { background-color: transparent; border: none; box-shadow: none; }
+        .projeto-header { padding: 0 0 16px 0; border-bottom: none; }
+        .projeto-titulo-input { font-size: 24px; font-weight: 700; }
+        .tarefas-container { display: flex; flex-direction: column; gap: 20px; }
+        .card-tarefa { background-color: var(--cor-branco); border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); box-shadow: 0 2px 4px var(--cor-sombra); padding: 16px; }
+        .card-tarefa-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; border-bottom: 1px solid var(--cor-borda); padding-bottom: 12px; margin-bottom: 12px; }
+        .card-tarefa-header-main { flex-grow: 1; }
+        .card-tarefa-header-main input { font-size: 18px; font-weight: 600; border: none; padding: 0; background: transparent; width: 100%; }
+        .card-tarefa-prazo { text-align: right; }
+        .prazo-label { font-size: 12px; color: var(--cor-texto-secundario); margin-bottom: 4px; display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
+        .prazo-label svg { width: 14px; height: 14px; }
+        .prazo-input { border: none; background: transparent; font-size: 14px; text-align: right; padding: 0; }
+        .subtarefas-lista { display: flex; flex-direction: column; gap: 10px; }
+        .linha-subtarefa { display: flex; align-items: center; gap: 12px; background-color: var(--cor-branco); padding: 8px; border-radius: 6px; border: 1px solid var(--cor-borda); }
+        .linha-subtarefa:hover { background-color: var(--cor-fundo); }
         .linha-subtarefa input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--cor-primaria); }
         .linha-subtarefa input[type="text"] { flex-grow: 1; border: none; background: transparent; font-size: 14px; }
         .linha-subtarefa.concluida input[type="text"] { text-decoration: line-through; color: var(--cor-texto-secundario); }
-        .projeto-footer { padding: 10px 20px; }
-        .btn-adicionar-tarefa { background: none; border: none; color: var(--cor-primaria); cursor: pointer; font-weight: 500; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .linha-subtarefa .btn-excluir { margin-left: auto; }
+        .card-tarefa-footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--cor-borda); }
+        .projeto-footer { padding: 16px 0; }
+        .btn-adicionar-tarefa { background: var(--cor-primaria-clara); color: var(--cor-primaria); border: 1px dashed var(--cor-primaria); border-radius: var(--raio-borda); padding: 12px; width: 100%; justify-content: center; }
+        .btn-adicionar-tarefa:hover { background: var(--cor-primaria); color: var(--cor-branco); border-style: solid; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity var(--velocidade-transicao) ease; }
         .modal-overlay.visivel { opacity: 1; pointer-events: auto; }
         .modal-content { background: var(--cor-branco); padding: 30px; border-radius: var(--raio-borda); width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transform: scale(0.95); transition: transform var(--velocidade-transicao) ease; }
@@ -65,20 +66,7 @@
         .modal-content h3 { margin-bottom: 20px; font-size: 20px; text-align: center; }
         .modal-content input { width: 100%; border: 1px solid var(--cor-borda); padding: 12px; border-radius: var(--raio-borda); font-size: 16px; margin-bottom: 20px; }
         .modal-acoes { display: flex; justify-content: flex-end; gap: 10px; }
-        @media (max-width: 768px) {
-            .container { padding: 15px; } header h1 { font-size: 22px; } .tabela-header { display: none; }
-            .tabela-tarefas, .linha-tarefa { display: block; }
-            .linha-tarefa { border: 1px solid var(--cor-borda); border-radius: var(--raio-borda); margin: 0 15px 15px; padding: 15px; }
-            .celula { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; padding: 8px 0; min-height: auto; border-bottom: 1px dashed var(--cor-borda); }
-            .linha-tarefa .celula:last-child { border-bottom: none; }
-            .celula::before { content: attr(data-label); font-weight: 500; color: var(--cor-texto-secundario); font-size: 13px; margin-right: 10px; }
-            .celula:has(input[data-field="nome"]) { flex-direction: column; align-items: flex-start; gap: 5px; }
-            .celula:has(input[data-field="nome"])::before { display: none; }
-            .celula input[data-field="nome"] { font-size: 16px; font-weight: 600; padding-left: 0; }
-            .celula-acoes { justify-content: flex-end; padding-top: 10px; }
-            .celula-acoes::before { display: none; }
-            .linha-subtarefa { margin: 0 15px; padding-left: 15px; border: 1px solid var(--cor-borda); border-top: none; border-radius: 0 0 var(--raio-borda) var(--raio-borda); margin-top: -16px; margin-bottom: 15px; }
-        }
+        /* Media queries podem ser ajustadas depois, se necessário */
     </style>
 </head>
 <body>
@@ -108,7 +96,8 @@
                 addSubtask: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M228,80a12,12,0,0,1-12,12H160v28h56a12,12,0,0,1,0,24H160v28h56a12,12,0,0,1,0,24H148a12,12,0,0,1-12-12V92H40a12,12,0,0,1,0-24H136V40a12,12,0,0,1,24,0V68h56A12,12,0,0,1,228,80Z"></path></svg>`,
                 trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,160H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>`,
                 close: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"></path></svg>`,
-                save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`
+                save: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M216,92H164V40a12,12,0,0,0-12-12H104A12,12,0,0,0,92,40V92H40a12,12,0,0,0-12,12v96a12,12,0,0,0,12,12H216a12,12,0,0,0,12-12V104A12,12,0,0,0,216,92ZM108,44h40V92H108Zm104,152H44V108H212Z"></path></svg>`,
+                calendar: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M208,32H184V24a12,12,0,0,0-24,0v8H96V24a12,12,0,0,0-24,0v8H48A20,20,0,0,0,28,52V208a20,20,0,0,0,20,20H208a20,20,0,0,0,20-20V52A20,20,0,0,0,208,32Zm-4,172H52V88H204Zm0-144H52V56H72v8a12,12,0,0,0,24,0V56h64v8a12,12,0,0,0,24,0V56h20Z"></path></svg>`
             },
 
             marcarAlteracao() {
@@ -242,17 +231,68 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                     const projetoEl = document.createElement('div');
                     projetoEl.className = 'projeto';
                     projetoEl.dataset.projetoId = projeto.id;
-                    const tarefasHTML = projeto.tarefas.map(tarefa => { const subtarefasHTML = tarefa.subtarefas.map(st => this.getSubtarefaHTML(tarefa.id, st)).join(''); return this.getTarefaHTML(tarefa) + subtarefasHTML; }).join('');
-                    projetoEl.innerHTML = `<div class="projeto-header"><input type="text" value="${projeto.nome}" data-field="nome-projeto" class="projeto-titulo-input" title="Clique para editar o nome do projeto"><button class="btn-excluir" data-action="excluir-projeto" title="Excluir Projeto">${this.icons.trash}</button></div><div class="tabela-tarefas"><div class="tabela-header"><div>Tarefa</div><div>Prazo</div><div>Ações</div></div>${tarefasHTML}</div><div class="projeto-footer"><button class="btn-adicionar-tarefa" data-action="adicionar-tarefa">${this.icons.add} Adicionar Tarefa</button></div>`;
+                    
+                    const tarefasContainer = document.createElement('div');
+                    tarefasContainer.className = 'tarefas-container';
+                    projeto.tarefas.forEach(tarefa => {
+                        const tarefaEl = this.getTarefaElement(projeto.id, tarefa);
+                        tarefasContainer.appendChild(tarefaEl);
+                    });
+
+                    projetoEl.innerHTML = `
+                        <div class="projeto-header">
+                            <input type="text" value="${projeto.nome}" data-field="nome-projeto" class="projeto-titulo-input" title="Clique para editar o nome do projeto">
+                            <button class="btn-excluir" data-action="excluir-projeto" title="Excluir Projeto">${this.icons.trash}</button>
+                        </div>`;
+                    
+                    projetoEl.appendChild(tarefasContainer);
+                    
+                    const footer = document.createElement('div');
+                    footer.className = 'projeto-footer';
+                    footer.innerHTML = `<button class="btn-adicionar-tarefa" data-action="adicionar-tarefa">${this.icons.add} Adicionar Tarefa</button>`;
+                    projetoEl.appendChild(footer);
+
                     container.appendChild(projetoEl);
                 });
             },
-            getTarefaHTML(tarefa) {
-                return `<div class="linha-tarefa" data-tarefa-id="${tarefa.id}"><div class="celula" data-label="Tarefa"><input type="text" value="${tarefa.nome}" data-field="nome" placeholder="Nome da tarefa..."></div><div class="celula" data-label="Prazo"><input type="date" value="${tarefa.prazo || ''}" data-field="prazo"></div><div class="celula celula-acoes"><button class="btn-acao" data-action="adicionar-subtarefa" title="Adicionar Sub-tarefa">${this.icons.addSubtask}</button><button class="btn-acao" data-action="excluir-tarefa" title="Excluir Tarefa">${this.icons.trash}</button></div></div>`;
+
+            getTarefaElement(projetoId, tarefa) {
+                const tarefaEl = document.createElement('div');
+                tarefaEl.className = 'card-tarefa';
+                tarefaEl.dataset.tarefaId = tarefa.id;
+                tarefaEl.dataset.projetoId = projetoId; // Adiciona para facilitar o event handling
+
+                const subtarefasHTML = tarefa.subtarefas.map(st => this.getSubtarefaHTML(tarefa.id, st)).join('');
+
+                tarefaEl.innerHTML = `
+                    <div class="card-tarefa-header">
+                        <div class="card-tarefa-header-main">
+                            <input type="text" value="${tarefa.nome}" data-field="nome" placeholder="Nome da tarefa...">
+                        </div>
+                        <div class="card-tarefa-prazo">
+                            <div class="prazo-label">${this.icons.calendar} Prazo</div>
+                            <input type="date" class="prazo-input" value="${tarefa.prazo || ''}" data-field="prazo">
+                        </div>
+                    </div>
+                    <div class="subtarefas-lista">
+                        ${subtarefasHTML}
+                    </div>
+                    <div class="card-tarefa-footer">
+                        <button class="btn-acao" data-action="adicionar-subtarefa" title="Adicionar Sub-tarefa">${this.icons.addSubtask}</button>
+                        <button class="btn-acao" data-action="excluir-tarefa" title="Excluir Tarefa">${this.icons.trash}</button>
+                    </div>
+                `;
+                return tarefaEl;
             },
+
             getSubtarefaHTML(tarefaId, subtarefa) {
                 const concluidaClass = subtarefa.concluida ? 'concluida' : '';
-                return `<div class="linha-subtarefa ${concluidaClass}" data-tarefa-id="${tarefaId}" data-subtarefa-id="${subtarefa.id}"><input type="checkbox" data-action="toggle-subtarefa" title="Marcar como concluída" ${subtarefa.concluida ? 'checked' : ''}><input type="text" value="${subtarefa.nome}" data-field="nome-subtarefa" placeholder="Descreva a sub-tarefa..."><button class="btn-excluir" data-action="excluir-subtarefa" title="Excluir Sub-tarefa">${this.icons.close}</button></div>`;
+                return `
+                    <div class="linha-subtarefa ${concluidaClass}" data-tarefa-id="${tarefaId}" data-subtarefa-id="${subtarefa.id}">
+                        <input type="checkbox" data-action="toggle-subtarefa" title="Marcar como concluída" ${subtarefa.concluida ? 'checked' : ''}>
+                        <input type="text" value="${subtarefa.nome}" data-field="nome-subtarefa" placeholder="Descreva a sub-tarefa...">
+                        <button class="btn-excluir" data-action="excluir-subtarefa" title="Excluir Sub-tarefa">${this.icons.close}</button>
+                    </div>`;
             },
             attachEventListeners() {
                 document.getElementById('btn-salvar-github').addEventListener('click', () => this.salvarNoGitHub());
@@ -262,22 +302,32 @@ this.alteracoesNaoSalvas = false; // <-- ADICIONAR AQUI
                 document.getElementById('btn-modal-salvar').addEventListener('click', () => { const input = document.getElementById('input-nome-projeto'); if (input.value.trim()) { this.adicionarProjeto(input.value.trim()); this.toggleModal(false); } });
                 document.getElementById('quadro-container').addEventListener('click', e => {
                     const target = e.target.closest('[data-action]'); if (!target) return;
-                    const action = target.dataset.action; const projetoEl = target.closest('.projeto'); const tarefaEl = target.closest('[data-tarefa-id]');
-                    const projetoId = projetoEl?.dataset.projetoId; const tarefaId = tarefaEl?.dataset.tarefaId;
+                    const action = target.dataset.action; 
+                    const projetoEl = target.closest('.projeto');
+                    const tarefaEl = target.closest('.card-tarefa');
+                    const subtarefaEl = target.closest('.linha-subtarefa');
+
+                    const projetoId = projetoEl?.dataset.projetoId;
+                    const tarefaId = tarefaEl?.dataset.tarefaId;
+                    const subtarefaId = subtarefaEl?.dataset.subtarefaId;
+
                     switch (action) {
-                        case 'excluir-projeto': if (confirm('Tem certeza?')) { this.excluirProjeto(projetoId); } break;
+                        case 'excluir-projeto': if (confirm('Tem certeza que deseja excluir este projeto e todas as suas tarefas?')) { this.excluirProjeto(projetoId); } break;
                         case 'adicionar-tarefa': this.adicionarTarefa(projetoId); break;
-                        case 'excluir-tarefa': if (confirm('Tem certeza?')) { this.excluirTarefa(projetoId, tarefaId); } break;
+                        case 'excluir-tarefa': if (confirm('Tem certeza que deseja excluir esta tarefa?')) { this.excluirTarefa(projetoId, tarefaId); } break;
                         case 'adicionar-subtarefa': this.adicionarSubtarefa(projetoId, tarefaId); break;
-                        case 'excluir-subtarefa': const stId = target.closest('[data-subtarefa-id]').dataset.subtarefaId; this.excluirSubtarefa(projetoId, tarefaId, stId); break;
-                        case 'toggle-subtarefa': const stEl = target.closest('[data-subtarefa-id]'); this.toggleSubtarefa(projetoId, tarefaId, stEl.dataset.subtarefaId, target.checked); stEl.classList.toggle('concluida', target.checked); break;
+                        case 'excluir-subtarefa': this.excluirSubtarefa(projetoId, tarefaId, subtarefaId); break;
+                        case 'toggle-subtarefa': this.toggleSubtarefa(projetoId, tarefaId, subtarefaId, target.checked); subtarefaEl.classList.toggle('concluida', target.checked); break;
                     }
                 });
                 document.getElementById('quadro-container').addEventListener('change', e => {
                     const field = e.target.dataset.field; if (!field) return;
-                    const projetoId = e.target.closest('.projeto').dataset.projetoId; const tarefaId = e.target.closest('[data-tarefa-id]')?.dataset.tarefaId;
+                    const projetoId = e.target.closest('.projeto')?.dataset.projetoId;
+                    const tarefaId = e.target.closest('.card-tarefa')?.dataset.tarefaId;
+                    const subtarefaId = e.target.closest('.linha-subtarefa')?.dataset.subtarefaId;
+
                     if (field === "nome-projeto") this.atualizarProjeto(projetoId, 'nome', e.target.value);
-                    else if (field === 'nome-subtarefa') this.atualizarSubtarefa(projetoId, tarefaId, e.target.closest('[data-subtarefa-id]').dataset.subtarefaId, 'nome', e.target.value);
+                    else if (field === 'nome-subtarefa') this.atualizarSubtarefa(projetoId, tarefaId, subtarefaId, 'nome', e.target.value);
                     else this.atualizarTarefa(projetoId, tarefaId, field, e.target.value);
                 });
 
